@@ -4,3 +4,6 @@ Welcome to the **Java Projects Repository**! This repository is dedicated to all
 
 We encourage contributions from everyone! Whether it's a small fix or a large project, your contributions are welcome. Here's how you can get involved:
 
+# 1. Video Rental Inventory System 
+For More Information Read - https://nirajsahani147.hashnode.dev/java-based-video-rental-inventory-system
+
