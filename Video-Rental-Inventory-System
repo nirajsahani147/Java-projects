@@ -1,0 +1,195 @@
+import java.util.Scanner;
+
+public class Video {
+    private String videoName = "";
+    private boolean checkOut;
+    private int rating = 0;
+
+    //constructor of Video class
+    public Video(){};
+
+    public void setData(String videoName, boolean checkOut, int rating) {
+        this.videoName = videoName;
+        this.checkOut = checkOut;
+        this.rating = rating;
+    }
+
+    //now code funtions of video class
+    public String getVideoName() {
+        return videoName;
+    }
+
+    public boolean getCheckOut() {
+        return checkOut;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void doCheckOut(boolean f){
+        this.checkOut=f;
+    }
+    //use using doReturn method we just reverse the checkout status
+    // checkOut =false means book is available at store
+
+    public void doReturn(boolean flag) {
+        checkOut = !flag;
+    }
+
+    //now we will write receive rating method to just receive from customer
+    public void recieveRating(int rating) {
+        this.rating = rating;
+    }
+}
+
+// Class representing the video store
+class videoStore {
+    Scanner sc = new Scanner(System.in);  // Scanner object for user input
+
+    // Array to store Video objects
+    Video objects[] = new Video[100];
+    int objCount = 0;  // Keep track of the number of videos
+
+    String videoName = "";  // Stores the current video name
+    boolean checkOut;  // Status of video check-out
+    int rating = 0;  // Rating of the video
+
+    // Method to add a new video to the store
+    public void addVideo(String videoName) {
+        objects[objCount] = new Video();  // Create a new Video object
+        this.videoName = videoName;  // Set the video name
+        objects[objCount].setData(videoName, checkOut, rating);  // Set video data
+        objCount++;  // Increment video count
+    }
+
+    // Method to check out a video by name
+    public void doCheckOut(String name) {
+        int index = searchVideo(name);  // Search for the video by name
+        if (index == -1) {
+            System.out.println("Video is Not available!! ");  // Video not found
+        } else {
+            objects[index].doCheckOut(true);  // Mark video as checked out
+            System.out.println("Video : " + objects[index].getVideoName() + " successfully checked out");
+        }
+        System.out.println();
+    }
+
+    // Method to receive rating for a video
+    public void receiveRating(String videoName, int rating) {
+        int index = searchVideo(videoName);  // Search for the video by name
+        if (index == -1) {
+            System.out.println("Video is Not available!! ");  // Video not found
+        } else {
+            this.rating = rating;  // Set rating
+            objects[index].recieveRating(rating);  // Update the video's rating
+            System.out.println("Rating " + rating + " mapped to " + objects[index].getVideoName() + " successfully");
+        }
+        System.out.println();
+    }
+
+    // Method to return a video by name
+    public void doReturn(String videoName) {
+        int index = searchVideo(videoName);  // Search for the video by name
+        if (index == -1) {
+            System.out.println("Video is Not available!! ");  // Video not found
+        } else {
+            if (objects[index].getCheckOut()) {  // Check if the video is checked out
+                objects[index].doReturn(true);  // Mark the video as returned
+                System.out.println("Video : " + objects[index].getVideoName() + " Returned ");
+            } else {
+                System.out.print("Video is not checked out YET");
+            }
+        }
+        System.out.println();
+    }
+
+    // Method to list the inventory of videos
+    public void listInventory() {
+        // %-20s ensures that each string is left-aligned and takes up 20 characters of space.
+        // The printf() method is used to format the output, aligning the columns consistently.
+        System.out.println("-----------------------------------------------------------------------------");
+        System.out.printf(" %-20s |  %-20s |  %-20s |\n", "Video Name", "Check Out Status", "Video Rating");
+        System.out.println("-----------------------------------------------------------------------------");
+        for (int i = 0; i < objCount; i++) {
+            System.out.printf(" %-20s |  %-20s |  %-20s |\n",
+                    objects[i].getVideoName(),
+                    objects[i].getCheckOut(),
+                    objects[i].getRating());
+        }
+        System.out.println("-----------------------------------------------------------------------------");
+    }
+
+    // Method to search for a video by its name and return its index
+    public int searchVideo(String videoName) {
+        int ind = -1;  // Initialize the index as -1 (video not found)
+        for (int i = 0; i < objCount; i++) {
+            if (objects[i].getVideoName().equals(videoName)) {  // Check if the video name matches
+                ind = i;  // Set the index if found
+                break;
+            }
+        }
+        return ind;  // Return the index
+    }
+}
+
+// Main class to run the video store operations
+public class videoLauncher {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);  // Scanner object for user input
+        videoStore v = new videoStore();  // Create a new video store object
+
+        boolean loop = true;  // To keep the menu running until exit is chosen
+        while (loop) {
+            // Display the main menu
+            System.out.println("MAIN MENU");
+            System.out.println("=========");
+            System.out.println("1. Add Videos \n2. Check Out Video \n3. Return Video \n4. Receive Rating " +
+                    "\n5. List Inventory  \n6. Exit");
+            System.out.println("Enter your choice (1-6):");
+            int choices = sc.nextInt();  // Get the user's choice
+            sc.nextLine();  // Consume the newline character
+
+            // Execute the action based on the user's choice
+            switch (choices) {
+                case 1:
+                    // Add a new video
+                    System.out.println("Enter the movie name you want to add:");
+                    String movieName = sc.nextLine();
+                    v.addVideo(movieName);
+                    break;
+                case 2:
+                    // Check out a video
+                    System.out.println("Check out this Video: ");
+                    System.out.println("Enter video Name:");
+                    String videoName = sc.nextLine();
+                    v.doCheckOut(videoName);
+                    break;
+                case 3:
+                    // Return a video
+                    System.out.println("Enter the video name you want to return:");
+                    String vName = sc.nextLine();
+                    v.doReturn(vName);
+                    break;
+                case 4:
+                    // Rate a video
+                    System.out.println("Enter the Video name you want to rate out of 10:");
+                    String vname = sc.nextLine();
+                    System.out.println("Enter the rating of this video:");
+                    int rating = sc.nextInt();
+                    v.receiveRating(vname, rating);
+                    break;
+                case 5:
+                    // List inventory of videos
+                    v.listInventory();
+                    break;
+                default:
+                    // Exit the application
+                    System.out.println("Feels happy to help ");
+                    loop = false;  // Exit the loop
+                    break;
+            }
+            System.out.println();
+        }
+    }
+}
