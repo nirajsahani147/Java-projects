@@ -24,5 +24,5 @@ This project is a simulation of an ATM (Automated Teller Machine) system designe
 - **Database:** MySQL
 - **Development Environment:** [IntelliJ IDEA]
 
-Create this Table with this structure:
+Create this Table with this structure:(correction : atmNumber should be accountNumber)
 ![image](https://github.com/user-attachments/assets/fdd0c793-32a6-4a00-8889-c173619d8053)
