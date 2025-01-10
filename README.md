@@ -23,3 +23,6 @@ This project is a simulation of an ATM (Automated Teller Machine) system designe
 - **Programming Language:** [Java]
 - **Database:** MySQL
 - **Development Environment:** [IntelliJ IDEA]
+
+Create this Table with this structure:
+![image](https://github.com/user-attachments/assets/fdd0c793-32a6-4a00-8889-c173619d8053)
