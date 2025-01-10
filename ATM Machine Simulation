@@ -1,0 +1,215 @@
+package ProjectMYsql;
+
+import java.sql.*;
+import java.util.InputMismatchException;
+import java.util.Random;
+import java.util.Scanner;
+
+public class AtmMachineWithMysql {
+    static Scanner sc = new Scanner(System.in);
+
+    public static void main(String[] args) {
+
+        Connection connection = null;
+        try {
+            //you need to create database explicitly
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", password);  //Enter your password , and also create a database mydb (you can create any database just replace you db name with mydb)
+            System.out.println("Connected successfully");
+        } catch (Exception e) {
+            e.printStackTrace();  // Print the exception details
+            System.out.println("Error while connecting with db");
+        }
+
+
+        System.out.println("Welcome to Public Fund Bank");
+        System.out.println("===========================");
+
+        boolean flag = true;
+        while (flag) {
+            System.out.println("Please type an option:");
+            System.out.println("1. If you are a New User");
+            System.out.println("2. For Money Withdrawal");
+            System.out.println("3. Check Balance");
+            System.out.println("4. Deposit Money");
+            System.out.println("5. Exit ");
+
+            try {
+                int option = sc.nextInt();
+                switch (option) {
+                    case 1:
+                        try {
+                            newUserAccount(connection);
+                        } catch (Exception e) {
+                            System.out.println(e);
+                        }
+                        break;
+                    case 2:
+                        try {
+                            withdrawMoney(connection);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
+                    case 3:
+                        try {
+                            checkBalance(connection);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
+                    case 4:
+                        try {
+                            depositMoney(connection);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        break;
+                    case 5:
+                        flag = false;
+                        break;
+                    default:
+                        System.out.println("Choose between 1-5");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("You haven't choose valid input ");
+                sc.nextLine(); // if we not use it : there will be a infinite loop run because buffer of option is still having invalid input
+            }
+            System.out.println();
+        }
+    }
+
+
+    private static void newUserAccount(Connection connection) throws SQLException {
+        System.out.println("** Create your account **");
+
+        System.out.println("Enter your First Name");
+        String ame = sc.next();
+        System.out.println("Enter your middle Name");
+        String mName = sc.next();
+        String Name = ame + " " + mName;
+
+        System.out.println("Enter Your pin : ");
+        int pin = sc.nextInt();
+
+        Random ran = new Random();
+        int accountNumber = ran.nextInt();
+        double balance = 0.0;
+        //String query = "CREATE TABLE IF NOT EXIST Public_bank (name VARCHAR (30),pin INT, atmNumber INT,balance DOUBLE)"; I HARD CODED IT
+        String query = "INSERT INTO Public_bank(name,pin,accountNumber,balance) VALUES(?,?,?,?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, Name);
+        preparedStatement.setInt(2, pin);
+        preparedStatement.setInt(3, accountNumber);
+        preparedStatement.setDouble(4, balance);
+
+        int rowsAffected = preparedStatement.executeUpdate();
+        if (rowsAffected > 0) {
+            System.out.println("Your Account Created Successfully");
+        } else {
+            System.out.println("Error ");
+        }
+        if (preparedStatement != null) {
+            preparedStatement.close();
+        }
+    }
+
+    private static void checkBalance(Connection connection) throws SQLException {
+        System.out.println("To check Balance Please Enter your Account Number : ");
+        int accountNumber = sc.nextInt();
+        String query = "SELECT * FROM Public_bank WHERE Public_bank.accountNumber=?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, accountNumber);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            System.out.println("Enter your pin");
+            int pin = sc.nextInt();
+            int pin1 = resultSet.getInt("pin");
+            if (pin1 == pin) {
+                System.out.println("Your Balance is :  " + resultSet.getDouble("balance"));
+            } else {
+                System.out.println("Incorrect Pin. Exiting From Check Balance");
+            }
+        } else {
+            System.out.println("Incorrect Account Number");
+        }
+        if (preparedStatement != null) {
+            preparedStatement.close();
+        }
+        if (resultSet != null) {
+            resultSet.close();
+        }
+    }
+
+    private static void withdrawMoney(Connection connection) throws SQLException {
+        System.out.println("To check Balance Please Enter your Account Number : ");
+        int accountNumber = sc.nextInt();
+        String query = "SELECT * FROM Public_bank WHERE Public_bank.accountNumber=?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, accountNumber);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        System.out.println("Enter Amount");
+        int amount = sc.nextInt();
+        if (resultSet.next()) {
+            System.out.println("Enter your pin");
+            int pin = sc.nextInt();
+            int pin1 = resultSet.getInt("pin");
+            Double balance = resultSet.getDouble("balance");
+
+            if (pin1 == pin) {
+                if (balance < amount) {
+                    System.out.println("Insufficient Balance");
+                } else {
+                    balance = balance - amount;
+                    System.out.println("Your Balance is :  " + balance + " You Withdrawn : " + amount);
+                    String q = "UPDATE Public_bank SET balance=? WHERE Public_bank.accountNumber=?";
+                    PreparedStatement preparedStatement1 = connection.prepareStatement(q);
+                    preparedStatement1.setDouble(1, balance);
+                    preparedStatement1.setInt(2,accountNumber);
+                    preparedStatement1.executeUpdate();
+                }
+            } else {
+                System.out.println("Incorrect Pin. Exiting From Check Balance");
+            }
+        } else {
+            System.out.println("Incorrect Account Number");
+        }
+        if (preparedStatement != null) {
+            preparedStatement.close();
+        }
+        if (resultSet != null) {
+            resultSet.close();
+        }
+    }
+
+    private static void depositMoney(Connection connection) throws SQLException {
+        System.out.println("Deposit Money -> Please Enter your Account Number : ");
+        int accountNumber = sc.nextInt();
+        String query = "SELECT * FROM Public_bank WHERE Public_bank.accountNumber=?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, accountNumber);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        System.out.println("Enter Amount");
+        double amount = sc.nextInt();
+        if (resultSet.next()) {
+            double balance=resultSet.getDouble("balance");
+            balance = balance + amount;
+            System.out.println("Your Balance is :  " + balance + "You Deposited : " + amount);
+            String q = "UPDATE Public_bank SET balance=? WHERE Public_bank.accountNumber=?";
+            PreparedStatement preparedStatement1 = connection.prepareStatement(q);
+            preparedStatement1.setDouble(1, balance);
+            preparedStatement1.setInt(2,accountNumber);
+            int resultSet1=preparedStatement1.executeUpdate();  //update state return row not resultSet not need to close resultset1
+                preparedStatement1.close();
+        } else {
+            System.out.println("Incorrect Account Number");
+        }
+        if (preparedStatement != null) {
+            preparedStatement.close();
+        }
+        if (resultSet != null) {
+            resultSet.close();
+        }
+    }
+}
