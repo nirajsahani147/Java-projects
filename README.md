@@ -7,3 +7,19 @@ We encourage contributions from everyone! Whether it's a small fix or a large pr
 # 1. Video Rental Inventory System 
 For More Information Read - https://nirajsahani147.hashnode.dev/java-based-video-rental-inventory-system
 
+# 2. ATM Machine Simulation using java And MySQL
+# ATM Machine Simulation
+
+## Overview
+This project is a simulation of an ATM (Automated Teller Machine) system designed to replicate basic banking functionalities. It allows users to add accounts, deposit money, check their balance, and withdraw cash. This console-based application focuses on simplicity and functionality.
+
+## Features
+- **Add User:** Create new user accounts with basic details.
+- **Deposit Money:** Add funds to a user's account.
+- **Balance Inquiry:** Check the current balance of a user's account.
+- **Withdraw Money:** Withdraw funds from a user's account with sufficient balance validation.
+
+## Technologies Used
+- **Programming Language:** [Java]
+- **Database:** MySQL
+- **Development Environment:** [IntelliJ IDEA]
